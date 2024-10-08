@@ -12,7 +12,7 @@ export const serverSignIn = async (email:string, password:string) => {
         if (response.error) {
             throw new AuthError(response.error);
         } else {
-            redirect("/hello");
+            redirect("/profile");
         }
     } catch (error) {
         if (error instanceof AuthError) {
