@@ -8,8 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "../ui/button";
 import Image from "next/image";
+import SettingDialog from "../settingDialog/settingDialog";
 
 type ProfileCardProps = {
   session: Session;
@@ -17,7 +17,7 @@ type ProfileCardProps = {
 
 const ProfileCard = (session: ProfileCardProps) => {
   const user = session.session.user;
-  const profileImage = user?.image || "https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg";
+  const profileImage = user?.image as string || "https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small_2x/profile-icon-design-free-vector.jpg";
   return (
     <>
       <Card>
@@ -49,7 +49,7 @@ const ProfileCard = (session: ProfileCardProps) => {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full rounded-full">Setting</Button>
+          <SettingDialog />
         </CardFooter>
       </Card>
     </>

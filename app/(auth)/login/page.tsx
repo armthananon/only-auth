@@ -7,11 +7,10 @@ import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { signInSchema } from "@/lib/zod";
 
-import { serverSignIn } from "@/action/auth-action";
+import { serverSignIn, serverSignInGoogle } from "@/action/auth-action";
 
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
-
 
 type Props = {
   test?: string;
@@ -20,7 +19,7 @@ type Props = {
 function Login({}: Props) {
   const { data: session } = useSession();
   if (session) {
-    redirect("/hello");
+    redirect("/profile");
   }
 
   const [email, setEmail] = useState("");
@@ -85,12 +84,12 @@ function Login({}: Props) {
                 <div className="flex items-center">
                   {/* Password */}
                   <Label htmlFor="password">Password</Label>
-                  <Link
+                  {/* <Link
                     href="/forgot-password"
                     className="ml-auto inline-block text-sm underline"
                   >
                     Forgot your password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <Input
                   id="password"
@@ -104,7 +103,11 @@ function Login({}: Props) {
               </Button>
             </div>
           </form>
-          <Button variant="outline" className="w-full" onClick={() => {}}>
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={async () => serverSignInGoogle()}
+          >
             Login with Google
           </Button>
           <div className="mt-4 text-center text-sm">
@@ -127,9 +130,7 @@ function Login({}: Props) {
         <div className="h-full flex justify-center items-center">Only Auth</div>
       </div>
     </div>
-        
   );
-
 }
 
 export default Login;

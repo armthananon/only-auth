@@ -16,7 +16,7 @@ function SignUp() {
 
   const { data: session } = useSession();
   if (session) {
-    redirect("/hello");
+    redirect("/profile");
   }
 
   const [name, setName] = useState("");

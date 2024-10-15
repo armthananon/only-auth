@@ -64,3 +64,51 @@ export const serverSignUp = async (name: string, email:string, password:string) 
         throw error;
     }
 }
+
+export const serverSignInGoogle = async () => {
+    try {
+        await signIn("google");
+        
+    } catch (error) {
+        if (error instanceof AuthError) {
+            return error.message;
+        }
+        throw error;
+    }
+}
+
+export const saveSetting = async (email: string, name: string, imgUrl: string) => {
+    if (!name) {
+        return {
+            success: false,
+            message: "Name is required",
+            user: null,
+        };
+    }
+
+    try {
+        const updateUser = await prisma.user.update({
+            where: {
+                email: email,
+            },
+            data: {
+                name,
+                image: imgUrl,
+            },
+        });
+
+        return {
+            success: true,
+            message: "Profile updated successfully",
+            user: updateUser,
+        };
+        
+    } catch (error) {
+        return {
+            success: false,
+            message: (error as Error).message,
+            user: null,
+        };
+    }
+    
+}

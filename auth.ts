@@ -1,90 +1,8 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-// import type { Provider } from "next-auth/providers";
-
-// import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/prisma";
-
-// import { getUserFromDb } from "@/utils/db";
-// import { signInSchema } from "./lib/zod";
 import { comparePasswordAndHash } from "./utils/password";
-
-// const providers: Provider[] = [
-//   Credentials({
-//     credentials: {
-//       email: { label: "email", type: "email" },
-//       password: { label: "password", type: "password" },
-//     },
-//     async authorize(credentials) {
-//       const { email, password } = await signInSchema.parseAsync(credentials);
-//       const user = await getUserFromDb(email);
-
-//       if (!user) {
-//         throw new Error("User not found.");
-//       }
-
-//       const account = await prisma.account.findFirst({
-//         where: {
-//           userId: user.id,
-//           provider: "credentials",
-//         },
-//       });
-
-//       if (!account || !account.access_token) {
-//         throw new Error("Account or access token not found.");
-//       }
-
-//       const passwordMatch = comparePasswordAndHash(
-//         password,
-//         account.access_token
-//       );
-
-//       if (!passwordMatch) {
-//         throw new Error("Password does not match.");
-//       }
-
-//       return user;
-//     },
-//   }),
-// ];
-
-// export const providerMap = providers
-//   .map((provider) => {
-//     if (typeof provider === "function") {
-//       const providerData = provider();
-//       return { id: providerData.id, name: providerData.name };
-//     } else {
-//       return { id: provider.id, name: provider.name };
-//     }
-//   })
-//   .filter((provider) => provider.id !== "credentials");
-
-// export const { handlers, signIn, signOut, auth } = NextAuth({
-//   adapter: PrismaAdapter(prisma),
-//   providers,
-//   pages: {
-//     signIn: "/auth/login",
-//   },
-//   session: {
-//     strategy: "jwt",
-//   },
-//   callbacks: {
-//     async jwt({ token, user }) {
-//       if (user) {
-//         token.id = user.id;
-//       }
-//       return token;
-//     },
-//     async session({ session, token }) {
-//       if (token) {
-//         session.userId = token.id as string;
-//       }
-//       return session;
-//     },
-//   },
-//   secret: process.env.AUTH_SECRET,
-// });
-
+import Google from "next-auth/providers/google";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -134,6 +52,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         return user
       },
+    }),
+    Google({
+      authorization: {
+        params: {
+          prompt: 'consent',
+          access_type: 'offline',
+          response_type: 'code',
+        }
+      }
     })
   ],
   pages: {
@@ -152,5 +79,41 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
+    async signIn({ account, profile }) {
+      if (account?.provider === "google") {
+        const email = profile?.email
+        
+        const user = await prisma.user.findFirst({
+          where: {
+            email
+          }
+        })
+
+        if (!user) {
+          const newUser = await prisma.user.create({
+            data: {
+              email,
+              name: profile?.name,
+              image: profile?.picture,
+            }
+          })
+
+          await prisma.account.create({
+            data: {
+              userId: newUser.id,
+              provider: account.provider,
+              type: account.type,
+              access_token: account.accessToken as string,
+              providerAccountId: account.providerAccountId as string,
+              scope: account.scope as string,
+              refresh_token: account.refreshToken as string,
+              token_type: account.tokenType as string,
+            }
+          })
+        }
+        return true
+      }
+      return true
+    }
   },
 })
