@@ -3,11 +3,8 @@ import ProfileCard from "@/components/profileCard/profileCard";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import React from "react";
-type Props = {
-  test?: string;
-};
 
-async function ProfilePage({}: Props) {
+async function ProfilePage() {
   const session = await auth();
   if (!session) {
     redirect("/");

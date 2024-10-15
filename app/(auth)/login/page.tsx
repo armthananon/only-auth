@@ -12,11 +12,7 @@ import { serverSignIn, serverSignInGoogle } from "@/action/auth-action";
 import { useSession } from "next-auth/react";
 import { redirect } from "next/navigation";
 
-type Props = {
-  test?: string;
-};
-
-function Login({}: Props) {
+function Login() {
   const { data: session } = useSession();
   if (session) {
     redirect("/profile");
