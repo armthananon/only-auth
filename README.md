@@ -6,8 +6,8 @@ A project that allows users to sign up and log in to access the app's features.
 ## Technologies & Tools
 - Node.js
 - Next.js
+- Auth.js
 - Prisma
-- Authjs
 - tailwindcss
 - shadcn/ui
 - zod
@@ -21,12 +21,20 @@ A project that allows users to sign up and log in to access the app's features.
 ## Installation
 To install the project, follow the steps below:
 
+setup the environment variables
+- Create a `.env` file in the root directory
+- Add the following environment variables to the `.env` file
+    - `DATABASE_URL` - The URL of the database
+    - `AUTH_SECRET` - The secret key for the authentication
+    - `AUTH_GOOGLE_ID` - The client ID of the Google OAuth
+    - `AUTH_GOOGLE_SECRET` - The client secret of the Google OAuth
+
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/armthananon/only-auth.git
 
 # Navigate to the project directory
-cd your-repo-name
+cd only-auth
 
 # Install dependencies
 npm install
